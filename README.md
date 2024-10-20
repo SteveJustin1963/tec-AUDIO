@@ -2,7 +2,7 @@
 tec1 audio experiments
 
 
-### WAV file to MINT+DAC io
+### WAV file to MINT+DAC
 - https://simple.wikipedia.org/wiki/WAV
 - https://github.com/SteveJustin1963/tec-MINT
 - https://github.com/SteveJustin1963/tec-ADC-DAC
