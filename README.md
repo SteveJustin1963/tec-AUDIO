@@ -2,6 +2,16 @@
 tec1 audio experiments
 
 
+### WAV file to MINT+DAC io
+- https://simple.wikipedia.org/wiki/WAV
+- https://github.com/SteveJustin1963/tec-MINT
+- https://github.com/SteveJustin1963/tec-ADC-DAC
+
+  
+//////////////////////
+
+
+
 ### From https://create.arduino.cc/projecthub/projects/tags/audio
 - VU Meter
 - Spectrum Visualizer Analyzer
