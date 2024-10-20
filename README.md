@@ -7,7 +7,23 @@ tec1 audio experiments
 - https://github.com/SteveJustin1963/tec-MINT
 - https://github.com/SteveJustin1963/tec-ADC-DAC
 
-We start with a WAV file, lacking a am9511 mint cannot extract the data so we use python for this step.
+
+MINT itself does not directly support complex operations such as reading WAV files, manipulating binary data, or interacting with external file systems like Python does. MINT is designed as a minimalist language for small embedded systems, typically lacking file I/O and advanced data manipulation features needed for such a conversion directly within the MINT environment.
+
+### What is Possible with MINT?
+
+MINT can (maybe) handle playback and processing of data that has already been prepared and formatted externally. 
+The steps involved would be:
+
+1. **Use an External Tool (like Python)**:
+   - Extract and format the audio data from a WAV file using Python or another language that supports file and audio operations. The Python script can output a set of numerical values that represent the audio samples.
+
+2. **Integrate the Prepared Data into MINT**:
+   - Once the data is in a format compatible with MINT (like an array of integers), you copy this data into the MINT environment and write playback logic to process and output these values using hardware (e.g., a DAC).
+
+### 
+The conversion of WAV files into MINT-compatible data must be done outside of MINT (e.g., using Python). MINT can then be used to process or play the pre-formatted data, but it does not have the capabilities to extract or manipulate the WAV file directly.
+//////////////
 
 To convert a WAV file into MINT code, you'll need to transform the audio data into a format that MINT can handle since it is a minimalist language built for small systems (like the Z80 microprocessor). Here's a step-by-step guide on how you can achieve this:
 
