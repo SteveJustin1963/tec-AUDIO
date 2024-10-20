@@ -21,11 +21,7 @@ The steps involved would be:
 2. **Integrate the Prepared Data into MINT**:
    - Once the data is in a format compatible with MINT (like an array of integers), you copy this data into the MINT environment and write playback logic to process and output these values using hardware (e.g., a DAC).
 
-### 
-The conversion of WAV files into MINT-compatible data must be done outside of MINT (e.g., using Python). MINT can then be used to process or play the pre-formatted data, but it does not have the capabilities to extract or manipulate the WAV file directly.
-//////////////
-
-To convert a WAV file into MINT code, you'll need to transform the audio data into a format that MINT can handle since it is a minimalist language built for small systems (like the Z80 microprocessor). Here's a step-by-step guide on how you can achieve this:
+ 
 
 ### Step 1: Extract the WAV Data Using Python
 First, extract the audio data from the WAV file using Python. Since MINT supports only 16-bit integers, you’ll have to scale the WAV data accordingly and output it as a list that MINT can use.
@@ -83,8 +79,10 @@ Here’s how you can use MINT to play or manipulate the audio data stored in the
 
 1. **Define the Array in MINT**: Copy the array data into your MINT program:
 
+make sudo-MINT
+
 ```mint
-:WAV-DATA [ 0 127 -128 64 -64 32 -32 16 ... ] ;
+:WAV-DATA [ 0 127 -128 64 -64 32 -32 16 ... ]  ;
 ```
 
 2. **Create Variables for Playback**: Set up variables to keep track of the current index and other necessary playback parameters:
@@ -137,7 +135,8 @@ By following this process, you can convert a WAV file into a MINT-compatible for
 
 
 
-### From https://create.arduino.cc/projecthub/projects/tags/audio
+### More project ideas 
+
 - VU Meter
 - Spectrum Visualizer Analyzer
 - Piano / Keyboard
