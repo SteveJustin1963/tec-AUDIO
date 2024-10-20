@@ -7,6 +7,115 @@ tec1 audio experiments
 - https://github.com/SteveJustin1963/tec-MINT
 - https://github.com/SteveJustin1963/tec-ADC-DAC
 
+We start with a WAV file, lacking a am9511 mint cannot extract the data so we use python for this step.
+
+To convert a WAV file into MINT code, you'll need to transform the audio data into a format that MINT can handle since it is a minimalist language built for small systems (like the Z80 microprocessor). Here's a step-by-step guide on how you can achieve this:
+
+### Step 1: Extract the WAV Data Using Python
+First, extract the audio data from the WAV file using Python. Since MINT supports only 16-bit integers, you’ll have to scale the WAV data accordingly and output it as a list that MINT can use.
+
+Here’s a Python script to convert WAV audio samples into a format compatible with MINT:
+
+```python
+import wave
+import struct
+
+def convert_wav_to_mint(wav_filename, output_filename):
+    with wave.open(wav_filename, 'rb') as wav_file:
+        num_channels = wav_file.getnchannels()
+        sample_width = wav_file.getsampwidth()
+        sample_rate = wav_file.getframerate()
+        num_frames = wav_file.getnframes()
+        
+        frames = wav_file.readframes(num_frames)
+        
+        if sample_width == 1:
+            format = '{}B'.format(num_frames * num_channels)  # Unsigned 8-bit
+        elif sample_width == 2:
+            format = '{}h'.format(num_frames * num_channels)  # Signed 16-bit
+        else:
+            raise ValueError("Unsupported sample width")
+        
+        samples = struct.unpack(format, frames)
+
+    with open(output_filename, 'w') as f:
+        f.write("[ ")
+        for i, sample in enumerate(samples):
+            if i % 16 == 0:
+                f.write("\n")
+            f.write(f"{sample} ")
+        f.write("\n]")
+    print(f"Data converted and saved to {output_filename}")
+
+convert_wav_to_mint('input.wav', 'output.txt')
+```
+
+- This script reads a WAV file and extracts the audio samples as signed 16-bit integers, suitable for MINT.
+- The samples are saved in an array format compatible with MINT’s syntax.
+
+### Step 2: Import the Data into MINT
+The output file (`output.txt`) will look something like this:
+
+```mint
+[ 0 127 -128 64 -64 32 -32 16
+8 -8 4 -4 2 -2 1 -1 ... ]
+```
+
+### Step 3: Implement MINT Code for Playback
+
+Here’s how you can use MINT to play or manipulate the audio data stored in the array:
+
+1. **Define the Array in MINT**: Copy the array data into your MINT program:
+
+```mint
+:WAV-DATA [ 0 127 -128 64 -64 32 -32 16 ... ] ;
+```
+
+2. **Create Variables for Playback**: Set up variables to keep track of the current index and other necessary playback parameters:
+
+```mint
+VAR I  // Index for accessing the array
+VAR SAMPLE_RATE  // Sampling rate (adjust as needed for playback speed)
+```
+
+3. **Implement the Playback Loop**: MINT does not directly support audio output, so if you have a connected DAC (Digital-to-Analog Converter), you can use MINT's output capabilities to write values from the array:
+
+```mint
+:SAMPLE-RATE 8000 SAMPLE-RATE ! // Set the sample rate
+
+:PLAY-SAMPLE
+    I WAV-DATA ? /O          // Output the sample value to DAC port
+    I 1 + I !                // Increment index
+;
+
+:PLAY-WAV
+    0 I !                    // Initialize index to 0
+    (                        // Start an unlimited loop
+        I WAV-DATA ?         // Fetch the current sample
+        0= /W                // Break loop if end of data
+        PLAY-SAMPLE          // Play the sample
+        SAMPLE-RATE /U /N    // Delay to match the sample rate
+    )
+;
+```
+
+- **`PLAY-SAMPLE`**: Outputs the current sample to a DAC connected to a specific port.
+- **`PLAY-WAV`**: Loops through the samples, outputting them and delaying based on the `SAMPLE-RATE` variable.
+
+### Explanation of the Conversion Process
+
+1. **Extract the Data**: We use Python to read and scale the WAV file’s data.
+2. **Format the Data**: The extracted samples are formatted into an array suitable for MINT’s syntax.
+3. **Playback Logic**: In MINT, we set up a simple loop to read values from the array and send them to an output port (like a DAC). The playback rate is controlled via delays to match the original sample rate.
+
+### Additional Notes:
+
+- **Audio Output**: Ensure that your hardware setup supports sending audio signals to a DAC or another sound output device.
+- **Optimization**: MINT is designed for minimalism, so keep the array size and playback code efficient to fit within memory and processing constraints.
+
+By following this process, you can convert a WAV file into a MINT-compatible format and write MINT code to manipulate and play the audio data. Let me know if you need any further assistance with specific parts!
+
+
   
 //////////////////////
 
