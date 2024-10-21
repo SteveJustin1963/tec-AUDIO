@@ -129,7 +129,7 @@ VAR SAMPLE_RATE  // Sampling rate (adjust as needed for playback speed)
 
 Now lets make the real code
 
-###  wav-dat-dac.mint
+###  wav dac python and mint
 How this audio playback system works;
 
 The audio playback system in MINT consists of three main functions: F (for recording), G (for playing a single sample), and H (for playback). Here's how it works:
