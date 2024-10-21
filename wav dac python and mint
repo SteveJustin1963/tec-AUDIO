@@ -1,0 +1,75 @@
+import os
+import wave
+import struct
+
+def convert_wav_to_mint(wav_filename, output_filename):
+    if not os.path.exists(wav_filename):
+        print(f"Error: The file '{wav_filename}' does not exist.")
+        return
+
+    try:
+        with wave.open(wav_filename, 'rb') as wav_file:
+            # Get WAV file parameters
+            n_channels = wav_file.getnchannels()
+            sampwidth = wav_file.getsampwidth()
+            framerate = wav_file.getframerate()
+            n_frames = wav_file.getnframes()
+
+            # Read all frames
+            frames = wav_file.readframes(n_frames)
+
+        # Convert frames to samples
+        if sampwidth == 1:
+            fmt = f"{n_frames}B"
+            samples = struct.unpack(fmt, frames)
+            samples = [s - 128 for s in samples]  # Convert unsigned to signed
+        elif sampwidth == 2:
+            fmt = f"{n_frames}h"
+            samples = struct.unpack(fmt, frames)
+        else:
+            raise ValueError("Unsupported sample width")
+
+        # Generate MINT code
+        mint_code = "// Audio data array\n"
+        mint_code += f"[ {' '.join(map(str, samples))} ] a!\n\n"
+        mint_code += f"// Sample rate: {framerate} Hz\n"
+        mint_code += f"{framerate} r!\n\n"
+        mint_code += """// Function to read a single sample from the input port and store it in the array
+:F
+  p /I v!       // Read value from the input port p and store it in variable v
+  v i a ?!      // Store the value from v into array a at index i
+  i 1 + i!      // Increment the index for the next sample
+;
+
+// Function to play a single sample from the array
+:G
+  i a ? v!      // Fetch the value from array a at index i and store it in v
+  v /O          // Output the value in v to the output port
+  i 1 + i!      // Increment the index for playback
+;
+
+// Function to loop through the array and play back the samples
+:H
+  0 i!          // Initialize index to 0
+  /U (          // Begin an unlimited loop
+    i a ? v!    // Fetch the current sample value from array a and store it in v
+    v 0 = /W    // Exit the loop if the value is 0 (no more samples)
+    G           // Call function G to play the sample
+    r /N        // Delay to control playback speed based on sample rate
+  )
+;
+"""
+
+        # Write MINT code to output file
+        with open(output_filename, 'w') as output_file:
+            output_file.write(mint_code)
+
+        print(f"Conversion complete. MINT code written to {output_filename}")
+
+    except wave.Error:
+        print(f"Error: '{wav_filename}' is not a valid WAV file.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+# Usage
+convert_wav_to_mint('input.wav', 'output.txt')
