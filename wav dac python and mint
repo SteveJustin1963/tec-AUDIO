@@ -1,3 +1,5 @@
+``` python 
+
 import os
 import wave
 import struct
@@ -35,6 +37,28 @@ def convert_wav_to_mint(wav_filename, output_filename):
         mint_code += f"// Sample rate: {framerate} Hz\n"
         mint_code += f"{framerate} r!\n\n"
         mint_code += """// Function to read a single sample from the input port and store it in the array
+
+```
+"""
+
+        # Write MINT code to output file
+        with open(output_filename, 'w') as output_file:
+            output_file.write(mint_code)
+
+        print(f"Conversion complete. MINT code written to {output_filename}")
+
+    except wave.Error:
+        print(f"Error: '{wav_filename}' is not a valid WAV file.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+# Usage
+convert_wav_to_mint('input.wav', 'output.txt')
+
+
+
+```mint
+
 :F
   p /I v!       // Read value from the input port p and store it in variable v
   v i a ?!      // Store the value from v into array a at index i
@@ -58,18 +82,5 @@ def convert_wav_to_mint(wav_filename, output_filename):
     r /N        // Delay to control playback speed based on sample rate
   )
 ;
-"""
 
-        # Write MINT code to output file
-        with open(output_filename, 'w') as output_file:
-            output_file.write(mint_code)
-
-        print(f"Conversion complete. MINT code written to {output_filename}")
-
-    except wave.Error:
-        print(f"Error: '{wav_filename}' is not a valid WAV file.")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-# Usage
-convert_wav_to_mint('input.wav', 'output.txt')
+```
