@@ -127,7 +127,57 @@ VAR SAMPLE_RATE  // Sampling rate (adjust as needed for playback speed)
 - **Audio Output**: Ensure that your hardware setup supports sending audio signals to a DAC or another sound output device.
 - **Optimization**: MINT is designed for minimalism, so keep the array size and playback code efficient to fit within memory and processing constraints.
 
-By following this process, you can convert a WAV file into a MINT-compatible format and write MINT code to manipulate and play the audio data. Let me know if you need any further assistance with specific parts!
+Now lets make the real code
+
+###  wav-dat-dac.mint
+How this audio playback system works;
+
+The audio playback system in MINT consists of three main functions: F (for recording), G (for playing a single sample), and H (for playback). Here's how it works:
+
+1. Initialization:
+   - An array `a` is created to store audio samples.
+   - Variable `i` is initialized to 0. This is used as an index for the array.
+   - Variable `r` is set to 8000, representing the playback rate in Hz.
+   - Variable `p` is set to 0, representing the input port number (this should be adjusted to the correct port number).
+
+2. Recording Function (F):
+   - This function reads a single sample from the input port and stores it in the array.
+   - `p /I v!`: Reads a value from the input port `p` and stores it in variable `v`.
+   - `v i a ?!`: Stores the value from `v` into array `a` at index `i`.
+   - `i 1 + i!`: Increments the index `i` for the next sample.
+
+3. Single Sample Playback Function (G):
+   - This function plays back a single sample from the array.
+   - `i a ? v!`: Fetches the value from array `a` at index `i` and stores it in `v`.
+   - `v /O`: Outputs the value in `v` to the output port.
+   - `i 1 + i!`: Increments the index `i` for the next playback.
+
+4. Full Playback Function (H):
+   - This function loops through the array and plays back all samples.
+   - `0 i!`: Initializes the index to 0 to start from the beginning of the array.
+   - `/U (...)`: Begins an unlimited loop.
+   - Inside the loop:
+     - `i a ? v!`: Fetches the current sample from the array.
+     - `v 0 = /W`: Exits the loop if the value is 0 (assuming 0 marks the end of recorded data).
+     - `G`: Calls function G to play the current sample.
+     - `r /N`: Introduces a delay based on the playback rate to control playback speed.
+
+To use this system:
+
+1. First, you would call function F repeatedly to fill the array with audio data from the input port. You might do this in a loop for a specific duration or until a certain condition is met.
+
+2. Once recording is complete, you would call function H to play back the recorded audio.
+
+The system has some limitations:
+- It uses a fixed-size array, so the recording length is limited.
+- It assumes that a value of 0 marks the end of the recording.
+- There's no explicit buffer management, so if you record more samples than the array size, it will overwrite from the beginning.
+
+In a more advanced implementation, you might want to add:
+- Dynamic array sizing or circular buffer management.
+- Better end-of-recording detection.
+- Error handling for array bounds.
+- Separate control for recording and playback rates.
 
 
   
